@@ -92,23 +92,24 @@ backend/cmd/agg_stats
 ## 技术架构
 
 系统整体架构如下：
+```text
 OJ Platforms (Codeforces / 洛谷 / AtCoder)
-│
-▼
-数据采集程序
-│
-▼
-PostgreSQL
-│
-▼
-Go Backend
-│
-▼
-Admin 管理页面
-│
-▼
-AI 分析模块
-
+                │
+                ▼
+         数据采集程序
+                │
+                ▼
+          PostgreSQL
+                │
+                ▼
+           Go Backend
+                │
+                ▼
+         Admin 管理页面
+                │
+                ▼
+           AI 分析模块
+```
 
 数据流程：
 
@@ -142,21 +143,21 @@ AI 分析模块
 ---
 
 ## 项目结构
+```text
 acm-coach/
 ├── README.md
 ├── backend/
-│ ├── cmd/
-│ │ ├── server/ # Web 服务入口
-│ │ ├── collect_cf/ # Codeforces 数据采集
-│ │ └── agg_stats/ # 数据统计聚合
-│ ├── internal/
-│ │ ├── render/
-│ │ └── view/
-│ ├── go.mod
-│ └── go.sum
+│   ├── cmd/
+│   │   ├── server/        # Web 服务入口
+│   │   ├── collect_cf/    # Codeforces 数据采集
+│   │   └── agg_stats/     # 数据统计聚合
+│   ├── internal/
+│   │   ├── render/
+│   │   └── view/
+│   ├── go.mod
+│   └── go.sum
 └── docker-compose.yml
-
-
+```
 ---
 
 ## 快速启动
