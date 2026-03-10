@@ -1,0 +1,22 @@
+bin/
+*.exe
+*.out
+
+# env
+.env
+
+# database
+*.db
+
+# logs
+*.log
+
+# build
+dist/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
