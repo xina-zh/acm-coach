@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>ACM 教练管理系统</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0px auto;
+      padding: 0 20px;
+    }
+    .header {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      border-radius: 18px;
+      padding: 28px 32px;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.18);
+      margin-bottom: 24px;
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 32px;
+    }
+    .header p {
+      margin: 0;
+      font-size: 15px;
+      opacity: 0.95;
+    }
+    .nav {
+      display: flex;
+      gap: 16px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .nav a {
+      display: inline-block;
+      background: rgba(255,255,255,0.14);
+      color: white;
+      text-decoration: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .nav a:hover {
+      background: rgba(255,255,255,0.22);
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #ececec;
+      text-align: left;
+    }
+    th {
+      background: #f7f8fa;
+    }
+    tr:hover {
+      background: #fafafa;
+    }
+    a.member-link {
+      color: #2563eb;
+      text-decoration: none;
+    }
+    a.member-link:hover {
+      text-decoration: underline;
+    }
+    .empty {
+      color: #666;
+      padding: 10px 0 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+{{template "navbar"}}
+    <div class="card">
+      <h2>历史总做题数排行榜</h2>
+
+      {{if .Items}}
+      <table>
+        <thead>
+          <tr>
+            <th>排名</th>
+            <th>姓名</th>
+            <th>总AC题数</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{range .Items}}
+          <tr>
+            <td>{{.Rank}}</td>
+            <td><a class="member-link" href="/admin/members/{{.MemberID}}">{{.Name}}</a></td>
+            <td>{{.SolvedCount}}</td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+      {{else}}
+      <div class="empty">当前还没有统计数据</div>
+      {{end}}
+    </div>
+  </div>
+</body>
+</html>

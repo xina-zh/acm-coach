@@ -1,0 +1,48 @@
+{{define "navbar"}}
+<style>
+  .topbar {
+  max-width: 1100px;
+  margin: 24px auto;
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.18);
+}
+
+  .topbar-title {
+    margin: 0 0 12px 0;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .topbar-nav {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .topbar-nav a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    transition: 0.2s;
+  }
+
+  .topbar-nav a:hover {
+    background: rgba(255,255,255,0.22);
+  }
+</style>
+
+<div class="topbar">
+  <div class="topbar-title">ACM 教练管理系统</div>
+  <div class="topbar-nav">
+    <a href="/admin">首页</a>
+    <a href="/admin/members">成员列表</a>
+    <a href="/admin/rank/daily">每日排行榜</a>
+  </div>
+</div>
+{{end}}

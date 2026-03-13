@@ -38,9 +38,8 @@
 
 </head>
 <body class="container py-4">
-  <a href="/admin/members">&larr; Back</a>
-
-  <h1 class="mt-2">{{.Member.Name}} <small class="text-muted">(#{{.Member.ID}})</small></h1>
+  <a href="{{.BackURL}}" onclick="history.back(); return false;">&larr; Back</a>
+	<h1 class="mt-2">{{.Member.Name}} <small class="text-muted">(#{{.Member.ID}})</small></h1>
   <div class="mb-3">
   <form method="post" action="/admin/members/{{.Member.ID}}/collect" style="display:inline;">
     <button class="btn btn-warning btn-sm" type="submit">Collect CF</button>

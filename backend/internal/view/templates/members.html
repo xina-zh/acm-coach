@@ -4,20 +4,39 @@
   <meta charset="utf-8">
   <title>Members</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.nav {
+  margin-bottom: 20px;
+}
+.nav a {
+  margin-right: 12px;
+  text-decoration: none;
+  color: #2563eb;
+  font-weight: 500;
+}
+.nav a:hover {
+  text-decoration: underline;
+}
+</style>
 </head>
 <body class="container py-4">
-  <h1 class="mb-3">ACM Coach Admin - Members</h1>
+ 
+	{{template "navbar"}}
+	<h1 class="mb-3">ACM Coach Admin - Members</h1>
 
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>ID</th><th>Name</th><th>Grade</th><th>Student ID</th><th>Action</th>
+        </th><th>Name</th><th>Grade</th><th>Student ID</th><th>Action</th>
       </tr>
     </thead>
     <tbody>
     {{range .Members}}
       <tr>
-        <td>{{.ID}}</td>
         <td>{{.Name}}</td>
         <td>{{.Grade}}</td>
         <td>{{.StudentID}}</td>

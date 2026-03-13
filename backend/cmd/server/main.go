@@ -165,6 +165,11 @@ func main() {
 			return
 		}
 
+		backURL := c.Request.Referer()
+		if backURL == "" {
+			backURL = "/admin/members"
+		}
+
 		c.HTML(200, "member_detail.html", gin.H{
 			"Member": m,
 			"Stats":  stats,
@@ -176,6 +181,57 @@ func main() {
 		})
 
 	})
+
+	r.GET("/admin", func(c *gin.Context) {
+	rows, err := pool.Query(c, `
+		SELECT
+			m.id,
+			m.name,
+			COUNT(DISTINCT s.platform || ':' || s.problem_id) AS solved_count
+		FROM submissions s
+		JOIN accounts a ON s.account_id = a.id
+		JOIN members m ON a.member_id = m.id
+		WHERE s.verdict = 'OK'
+		GROUP BY m.id, m.name
+		ORDER BY solved_count DESC, m.id ASC
+		LIMIT 20
+	`)
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+	defer rows.Close()
+
+	type Item struct {
+		Rank        int
+		MemberID    int64
+		Name        string
+		SolvedCount int
+	}
+
+	var items []Item
+	rank := 1
+
+	for rows.Next() {
+		var it Item
+		if err := rows.Scan(&it.MemberID, &it.Name, &it.SolvedCount); err != nil {
+			c.String(500, err.Error())
+			return
+		}
+		it.Rank = rank
+		rank++
+		items = append(items, it)
+	}
+
+	c.HTML(200, "admin_home.html", gin.H{
+		"Items": items,
+	})
+})
+
+	r.GET("/admin/rank/daily", func(c *gin.Context) {
+   	 	dailyRankHandler(c, pool)
+	})
+	
 	// 手动采集：采集该 member 所有 codeforces 账号
 	r.POST("/admin/members/:id/collect", func(c *gin.Context) {
 		memberID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -187,6 +243,10 @@ func main() {
 		}
 
 		c.Redirect(http.StatusFound, "/admin/members/"+c.Param("id"))
+	})
+ 	
+	r.POST("/admin/members/collect-all", func(c *gin.Context) {
+   		 collectAllMembers(c, pool)
 	})
 
 	r.POST("/admin/members/:id/ai", func(c *gin.Context) {
@@ -337,6 +397,39 @@ func collectCFForMember(ctx context.Context, pool *pgxpool.Pool, memberID int64)
 	}
 
 	return insertedTotal, nil
+}
+
+func collectAllMembers(c *gin.Context, pool *pgxpool.Pool) {
+	rows, err := pool.Query(c, `SELECT id FROM members`)
+	if err != nil {
+		c.String(500, "query members failed: %v", err)
+		return
+	}
+	defer rows.Close()
+
+	totalMembers := 0
+	totalImported := 0
+
+	for rows.Next() {
+		var memberID int64
+		if err := rows.Scan(&memberID); err != nil {
+			c.String(500, "scan member failed: %v", err)
+			return
+		}
+
+		n, err := collectCFForMember(c, pool, memberID)
+		if err != nil {
+			continue
+		}
+
+		totalMembers++
+		totalImported += n
+	}
+
+	c.JSON(200, gin.H{
+		"members_processed": totalMembers,
+		"submissions_added": totalImported,
+	})
 }
 
 func upsertStatsForMember(ctx context.Context, pool *pgxpool.Pool, memberID int64, asOf time.Time) error {
@@ -609,4 +702,51 @@ func generateAIPlanDeepSeek(ctx context.Context, pool *pgxpool.Pool, memberID in
 
 	reportMD = out.Choices[0].Message.Content
 	return reportMD, inputJSON, modelName, nil
+}
+
+func dailyRankHandler(c *gin.Context, pool *pgxpool.Pool) {
+	rows, err := pool.Query(c, `
+		SELECT
+			m.id,
+			m.name,
+			COUNT(DISTINCT s.platform || ':' || s.problem_id) AS solved_count
+		FROM submissions s
+		JOIN accounts a ON s.account_id = a.id
+		JOIN members m ON a.member_id = m.id
+		WHERE s.verdict = 'OK'
+		  AND s.submitted_at >= CURRENT_DATE
+		  AND s.submitted_at < CURRENT_DATE + INTERVAL '1 day'
+		GROUP BY m.id, m.name
+		ORDER BY solved_count DESC, m.id ASC
+	`)
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+	defer rows.Close()
+
+	type Item struct {
+		Rank        int
+		MemberID    int64
+		Name        string
+		SolvedCount int
+	}
+
+	var items []Item
+	rank := 1
+
+	for rows.Next() {
+		var it Item
+		if err := rows.Scan(&it.MemberID, &it.Name, &it.SolvedCount); err != nil {
+			c.String(500, err.Error())
+			return
+		}
+		it.Rank = rank
+		rank++
+		items = append(items, it)
+	}
+
+	c.HTML(200, "daily_rank.html", gin.H{
+		"Items": items,
+	})
 }
